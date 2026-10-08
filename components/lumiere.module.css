@@ -1,0 +1,229 @@
+.page {
+  min-height: 100vh;
+  padding: 28px 32px 64px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 1.375rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  color: var(--fg-dim);
+  font-size: 0.875rem;
+  margin-top: 2px;
+}
+
+.refreshRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--fg-faint);
+  font-size: 0.8125rem;
+}
+
+.refreshButton {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: var(--fg);
+  font-size: 0.8125rem;
+}
+
+.refreshButton:hover {
+  border-color: var(--accent);
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.statCard {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+
+.statLabel {
+  color: var(--fg-dim);
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.statValue {
+  font-size: 1.75rem;
+  font-weight: 650;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 28px 0 12px;
+}
+
+.collegeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px;
+}
+
+.collegeCard {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: border-color 0.2s ease;
+}
+
+.collegeCard[data-active="true"] {
+  border-color: var(--accent);
+}
+
+.collegeName {
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.collegeNumbers {
+  color: var(--fg-faint);
+  font-size: 0.75rem;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.collegeStats {
+  display: flex;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.collegeStat {
+  font-size: 0.8125rem;
+  color: var(--fg-dim);
+}
+
+.collegeStatValue {
+  color: var(--fg);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.collegeActivity {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: var(--fg-faint);
+}
+
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+@media (max-width: 860px) {
+  .twoCol {
+    grid-template-columns: 1fr;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.listItem {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.listItemTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.listItemCollege {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--accent);
+}
+
+.listItemTime {
+  color: var(--fg-faint);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.listItemFrom {
+  color: var(--fg-dim);
+  font-size: 0.8125rem;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.transcription {
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  color: var(--fg);
+  line-height: 1.45;
+}
+
+.badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.badge[data-tone="good"] {
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+.badge[data-tone="warn"] {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.badge[data-tone="critical"] {
+  background: var(--critical-soft);
+  color: var(--critical);
+}
+
+.empty {
+  color: var(--fg-faint);
+  font-size: 0.8125rem;
+  padding: 20px;
+  text-align: center;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+}

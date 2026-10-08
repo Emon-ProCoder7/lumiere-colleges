@@ -1,32 +1,38 @@
 @import "tailwindcss";
 
 /* ============================================================
-   Lumiere ops dashboard — data-first, built on the same disciplined
-   dark-ground token system as the TrueTel telemetry dashboard, with
-   its own accent so the two are never confused at a glance.
+   Lumiere ops dashboard — light, high-contrast, product register.
+   Scene: a non-technical college-group CEO glancing at this for a
+   few seconds between meetings, on a laptop, in a normally-lit
+   office. Clarity first. Tinted neutrals (warm, toward the Lumiere
+   gold), never pure black/white. Accent used sparingly, not as
+   decoration.
    ============================================================ */
 
 :root {
-  --bg: #0a0e15;
-  --bg-raised: #10161f;
-  --bg-panel: #141b26;
-  --line: rgba(226, 236, 248, 0.1);
-  --line-soft: rgba(226, 236, 248, 0.05);
+  --bg: oklch(96.5% 0.007 85);
+  --bg-raised: oklch(99% 0.003 85);
+  --bg-panel: oklch(99.2% 0.002 85);
+  --line: oklch(85% 0.012 85);
+  --line-soft: oklch(90% 0.008 85);
 
-  --fg: #eaf1fa;
-  --fg-dim: rgba(234, 241, 250, 0.62);
-  --fg-faint: rgba(234, 241, 250, 0.38);
+  --fg: oklch(24% 0.02 262);
+  --fg-dim: oklch(42% 0.018 262);
+  --fg-faint: oklch(56% 0.014 262);
 
-  /* Lumiere accent — warm gold, distinct from TrueTel's cyan. */
-  --accent: #e8b94a;
-  --accent-soft: rgba(232, 185, 74, 0.16);
+  /* Lumiere accent — the gold from the logo, recalibrated for light
+     surfaces (darker/richer than the on-dark version so it holds up
+     as text and border color, not just a glow). */
+  --accent: oklch(58% 0.14 75);
+  --accent-soft: oklch(58% 0.14 75 / 0.12);
+  --accent-ink: oklch(32% 0.1 75);
 
-  --good: #6fcf8e;
-  --good-soft: rgba(111, 207, 142, 0.14);
-  --warn: #f2a65a;
-  --warn-soft: rgba(242, 166, 90, 0.14);
-  --critical: #e8746b;
-  --critical-soft: rgba(232, 116, 107, 0.14);
+  --good: oklch(50% 0.13 152);
+  --good-soft: oklch(50% 0.13 152 / 0.1);
+  --warn: oklch(58% 0.15 55);
+  --warn-soft: oklch(58% 0.15 55 / 0.12);
+  --critical: oklch(52% 0.19 25);
+  --critical-soft: oklch(52% 0.19 25 / 0.1);
 
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, "JetBrains Mono", "SF Mono", Consolas, monospace;
@@ -40,7 +46,7 @@
 html {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
@@ -49,7 +55,7 @@ body {
   color: var(--fg);
   font-family: var(--font-sans);
   font-size: 0.9375rem;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 ::selection {

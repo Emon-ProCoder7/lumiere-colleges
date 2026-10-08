@@ -3,8 +3,8 @@ export type CollegeSummary = {
   displayName: string;
   existingNumber: string;
   localNumber: string;
-  callCount24h: number;
-  voicemailCount24h: number;
+  callCount: number;
+  voicemailCount: number;
   lastActivityAt: string | null;
 };
 
@@ -31,14 +31,55 @@ export type LumiereCall = {
   recordingUrl: string | null;
 };
 
+export type CallVolumeBucket = {
+  key: string;
+  label: string;
+  answered: number;
+  voicemail: number;
+  abandoned: number;
+};
+
+export type CollegeAnswerRate = {
+  code: string;
+  displayName: string;
+  totalCalls: number;
+  answered: number;
+  answerRatePct: number;
+};
+
+export type HeatmapCell = {
+  dayOfWeek: number;
+  hour: number;
+  count: number;
+};
+
+export type LumiereAnalytics = {
+  callVolume: CallVolumeBucket[];
+  collegeAnswerRates: CollegeAnswerRate[];
+  heatmap: HeatmapCell[];
+  avgAnsweredDurationSeconds: number;
+  answerRatePct: number;
+  previousPeriod: {
+    totalCalls: number;
+    totalVoicemails: number;
+    answerRatePct: number;
+  } | null;
+};
+
+export type RangePreset = "24h" | "7d" | "30d";
+
 export type LumiereOverview = {
   kpis: {
-    totalCalls24h: number;
-    totalVoicemails24h: number;
-    collegesWithActivity24h: number;
+    totalCalls: number;
+    totalVoicemails: number;
+    collegesWithActivity: number;
   };
   colleges: CollegeSummary[];
   recentVoicemails: LumiereVoicemail[];
   recentCalls: LumiereCall[];
+  recentVoicemailsTruncated: boolean;
+  recentCallsTruncated: boolean;
+  analytics: LumiereAnalytics;
+  rangeLabel: string;
   generatedAt: string;
 };

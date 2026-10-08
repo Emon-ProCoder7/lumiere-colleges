@@ -476,3 +476,221 @@
   border: 1px dashed var(--line);
   border-radius: 8px;
 }
+
+/* Range selector */
+
+.rangeSelector {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rangeSegmented {
+  display: inline-flex;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.rangeButton {
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--fg-dim);
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background-color 0.16s ease, color 0.16s ease;
+}
+
+.rangeButton:hover {
+  color: var(--fg);
+}
+
+.rangeButton[data-active="true"] {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.rangeCustom {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.rangeCustomField {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.75rem;
+  color: var(--fg-faint);
+}
+
+.rangeCustomField input {
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--fg);
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 5px 8px;
+}
+
+.rangeApplyButton {
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: oklch(99% 0.002 85);
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: transform 0.16s cubic-bezier(0.23, 1, 0.32, 1), filter 0.16s ease;
+}
+
+.rangeApplyButton:hover {
+  filter: brightness(1.05);
+}
+
+.rangeApplyButton:active {
+  transform: scale(0.97);
+}
+
+/* Insights / charts */
+
+.insights {
+  margin-top: 8px;
+}
+
+.insightsKpiRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.insightsKpi {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+
+.insightsKpi .statValue[data-tone="good"] {
+  color: var(--good);
+}
+
+.insightsKpi .statValue[data-tone="warn"] {
+  color: var(--warn);
+}
+
+.insightsKpi .statValue[data-tone="critical"] {
+  color: var(--critical);
+}
+
+.insightsDelta {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: var(--fg-faint);
+}
+
+.insightsDelta[data-positive="true"] {
+  color: var(--good);
+}
+
+.insightsDelta[data-positive="false"] {
+  color: var(--critical);
+}
+
+.chartCard {
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px 18px 12px;
+  margin-bottom: 16px;
+}
+
+.chartCardTitle {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.chartCardHint {
+  color: var(--fg-faint);
+  font-size: 0.75rem;
+  margin-top: 2px;
+  margin-bottom: 8px;
+  max-width: 60ch;
+}
+
+.chartTooltip {
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 8px 24px oklch(24% 0.02 262 / 0.12);
+  font-size: 0.75rem;
+}
+
+.chartTooltipLabel {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--fg);
+}
+
+.chartTooltipRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--fg-dim);
+}
+
+.chartTooltipDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Heatmap */
+
+.heatmapWrap {
+  overflow-x: auto;
+}
+
+.heatmapGrid {
+  display: grid;
+  gap: 2px;
+  min-width: 420px;
+  align-items: center;
+}
+
+.heatmapHourLabel {
+  font-size: 0.625rem;
+  color: var(--fg-faint);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.heatmapDayLabel {
+  font-size: 0.6875rem;
+  color: var(--fg-dim);
+  padding-right: 4px;
+}
+
+.heatmapCell {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  min-height: 14px;
+  transition: transform 0.12s ease;
+}
+
+.heatmapCell:hover {
+  transform: scale(1.3);
+}

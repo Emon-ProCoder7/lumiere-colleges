@@ -12,18 +12,28 @@ import {
   formatPhoneDisplay,
 } from "@/lib/format";
 import type { LumiereOverview, CollegeSummary } from "@/lib/lumiere/types";
+import { RangeSelector, type RangeValue } from "./RangeSelector";
+import { InsightsSection } from "./InsightsSection";
 
 const REFRESH_MS = 30_000;
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
+const DEFAULT_RANGE: RangeValue = { kind: "preset", preset: "24h" };
 
 function heroImageFor(code: string): string {
   return `/colleges/${code.toLowerCase()}.png`;
 }
 
-function durationTone(durationSeconds: number, status: string | null): "good" | "warn" | "critical" {
-  if (durationSeconds > 0) return "good";
-  if (status && /no.?answer|missed|busy|fail/i.test(status)) return "critical";
-  return "warn";
+function durationTone(status: string | null): "good" | "warn" | "critical" {
+  if (status === "Answered") return "good";
+  if (status === "Voicemail") return "warn";
+  return "critical";
+}
+
+function rangeToQuery(range: RangeValue): string {
+  if (range.kind === "custom") {
+    return `from=${encodeURIComponent(range.from)}&to=${encodeURIComponent(range.to)}`;
+  }
+  return `range=${range.preset}`;
 }
 
 export function LumiereClient({ initialData }: { initialData: LumiereOverview }) {
@@ -31,11 +41,12 @@ export function LumiereClient({ initialData }: { initialData: LumiereOverview })
   const [lastFetched, setLastFetched] = useState(Date.now());
   const [loading, setLoading] = useState(false);
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
+  const [range, setRange] = useState<RangeValue>(DEFAULT_RANGE);
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (nextRange: RangeValue) => {
     setLoading(true);
     try {
-      const res = await fetch("/api/overview", { cache: "no-store" });
+      const res = await fetch(`/api/overview?${rangeToQuery(nextRange)}`, { cache: "no-store" });
       if (res.ok) {
         const fresh = (await res.json()) as LumiereOverview;
         setData(fresh);
@@ -49,9 +60,13 @@ export function LumiereClient({ initialData }: { initialData: LumiereOverview })
   }, []);
 
   useEffect(() => {
-    const id = setInterval(refresh, REFRESH_MS);
+    refresh(range);
+  }, [range, refresh]);
+
+  useEffect(() => {
+    const id = setInterval(() => refresh(range), REFRESH_MS);
     return () => clearInterval(id);
-  }, [refresh]);
+  }, [range, refresh]);
 
   useEffect(() => {
     if (!selectedCode) return;
@@ -63,7 +78,7 @@ export function LumiereClient({ initialData }: { initialData: LumiereOverview })
   }, [selectedCode]);
 
   const activeColleges = new Set(
-    data.colleges.filter((c) => c.callCount24h > 0 || c.voicemailCount24h > 0).map((c) => c.code)
+    data.colleges.filter((c) => c.callCount > 0 || c.voicemailCount > 0).map((c) => c.code)
   );
 
   const selectedCollege = data.colleges.find((c) => c.code === selectedCode) ?? null;
@@ -79,17 +94,19 @@ export function LumiereClient({ initialData }: { initialData: LumiereOverview })
           <Image src="/logo.png" alt="Lumiere" width={40} height={40} className={styles.logo} priority />
           <div>
             <div className={styles.title}>Lumiere College Group — Live Operations</div>
-            <div className={styles.subtitle}>Calls and voicemails by college, last 24 hours</div>
+            <div className={styles.subtitle}>Calls and voicemails by college, {data.rangeLabel}</div>
           </div>
         </div>
         <div className={styles.refreshRow}>
           <span className={styles.liveDot} aria-hidden="true" />
           <span>Updated {formatRelativeTime(new Date(lastFetched).toISOString())}</span>
-          <button className={styles.refreshButton} onClick={refresh} disabled={loading}>
+          <button className={styles.refreshButton} onClick={() => refresh(range)} disabled={loading}>
             {loading ? "Refreshing…" : "Refresh"}
           </button>
         </div>
       </div>
+
+      <RangeSelector value={range} onChange={setRange} />
 
       <div className={styles.statsRow}>
         <motion.div
@@ -98,8 +115,8 @@ export function LumiereClient({ initialData }: { initialData: LumiereOverview })
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, ease: EASE_OUT }}
         >
-          <div className={styles.statLabel}>Calls, 24h</div>
-          <div className={styles.statValue}>{formatCount(data.kpis.totalCalls24h)}</div>
+          <div className={styles.statLabel}>Calls</div>
+          <div className={styles.statValue}>{formatCount(data.kpis.totalCalls)}</div>
         </motion.div>
         <motion.div
           className={styles.statCard}
@@ -107,8 +124,8 @@ export function LumiereClient({ initialData }: { initialData: LumiereOverview })
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.04, ease: EASE_OUT }}
         >
-          <div className={styles.statLabel}>Voicemails, 24h</div>
-          <div className={styles.statValue}>{formatCount(data.kpis.totalVoicemails24h)}</div>
+          <div className={styles.statLabel}>Voicemails</div>
+          <div className={styles.statValue}>{formatCount(data.kpis.totalVoicemails)}</div>
         </motion.div>
         <motion.div
           className={styles.statCard}
@@ -118,10 +135,12 @@ export function LumiereClient({ initialData }: { initialData: LumiereOverview })
         >
           <div className={styles.statLabel}>Colleges with activity</div>
           <div className={styles.statValue}>
-            {data.kpis.collegesWithActivity24h} / {data.colleges.length}
+            {data.kpis.collegesWithActivity} / {data.colleges.length}
           </div>
         </motion.div>
       </div>
+
+      <InsightsSection analytics={data.analytics} rangeLabel={data.rangeLabel} totalCalls={data.kpis.totalCalls} />
 
       <div className={styles.sectionHead}>
         <div className={styles.sectionTitle}>By college</div>
@@ -145,16 +164,16 @@ export function LumiereClient({ initialData }: { initialData: LumiereOverview })
             </div>
             <div className={styles.collegeStats}>
               <span className={styles.collegeStat}>
-                Calls <span className={styles.collegeStatValue}>{c.callCount24h}</span>
+                Calls <span className={styles.collegeStatValue}>{c.callCount}</span>
               </span>
               <span className={styles.collegeStat}>
-                Voicemails <span className={styles.collegeStatValue}>{c.voicemailCount24h}</span>
+                Voicemails <span className={styles.collegeStatValue}>{c.voicemailCount}</span>
               </span>
             </div>
             <div className={styles.collegeActivity}>
               {c.lastActivityAt
                 ? `Last activity ${formatRelativeTime(c.lastActivityAt)}`
-                : "No activity in the last 24h"}
+                : `No activity in the ${data.rangeLabel}`}
             </div>
           </motion.button>
         ))}
@@ -162,7 +181,12 @@ export function LumiereClient({ initialData }: { initialData: LumiereOverview })
 
       <div className={styles.twoCol}>
         <div>
-          <div className={styles.sectionTitle}>Recent voicemails</div>
+          <div className={styles.sectionTitle}>
+            Recent voicemails
+            {data.recentVoicemailsTruncated ? (
+              <span className={styles.sectionHint}> &middot; showing latest {data.recentVoicemails.length}</span>
+            ) : null}
+          </div>
           {data.recentVoicemails.length === 0 ? (
             <div className={styles.empty}>No voicemails yet. They&apos;ll appear here as they come in.</div>
           ) : (
@@ -197,7 +221,12 @@ export function LumiereClient({ initialData }: { initialData: LumiereOverview })
         </div>
 
         <div>
-          <div className={styles.sectionTitle}>Recent calls</div>
+          <div className={styles.sectionTitle}>
+            Recent calls
+            {data.recentCallsTruncated ? (
+              <span className={styles.sectionHint}> &middot; showing latest {data.recentCalls.length}</span>
+            ) : null}
+          </div>
           {data.recentCalls.length === 0 ? (
             <div className={styles.empty}>No calls logged yet. They&apos;ll appear here as they come in.</div>
           ) : (
@@ -223,7 +252,7 @@ export function LumiereClient({ initialData }: { initialData: LumiereOverview })
                     {call.status ? (
                       <>
                         {" "}
-                        <span className={styles.badge} data-tone={durationTone(call.durationSeconds, call.status)}>
+                        <span className={styles.badge} data-tone={durationTone(call.status)}>
                           {call.status}
                         </span>
                       </>
@@ -353,7 +382,7 @@ function CollegeDetailModal({
                           {" "}
                           <span
                             className={styles.badge}
-                            data-tone={durationTone(call.durationSeconds, call.status)}
+                            data-tone={durationTone(call.status)}
                           >
                             {call.status}
                           </span>

@@ -27,6 +27,19 @@
   color-scheme: dark;
 }
 
+.header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    90deg,
+    oklch(10% 0.02 262 / 0.82) 0%,
+    oklch(10% 0.02 262 / 0.55) 45%,
+    oklch(10% 0.02 262 / 0.3) 100%
+  );
+}
+
 .header .title {
   color: oklch(97% 0.008 85);
 }

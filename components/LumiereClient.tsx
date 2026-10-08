@@ -16,6 +16,10 @@ import type { LumiereOverview, CollegeSummary } from "@/lib/lumiere/types";
 const REFRESH_MS = 30_000;
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
+function heroImageFor(code: string): string {
+  return `/colleges/${code.toLowerCase()}.png`;
+}
+
 function durationTone(durationSeconds: number, status: string | null): "good" | "warn" | "critical" {
   if (durationSeconds > 0) return "good";
   if (status && /no.?answer|missed|busy|fail/i.test(status)) return "critical";
@@ -274,8 +278,12 @@ function CollegeDetailModal({
         transition={{ duration: 0.25, ease: EASE_OUT }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className={styles.modalHeader}>
-          <div>
+        <div
+          className={styles.modalHeader}
+          style={{ backgroundImage: `url(${heroImageFor(college.code)})` }}
+        >
+          <div className={styles.modalHeaderOverlay} aria-hidden="true" />
+          <div className={styles.modalHeaderText}>
             <div className={styles.modalTitle}>{college.displayName}</div>
             <div className={styles.collegeNumbers}>
               {college.existingNumber} &middot; {college.localNumber}

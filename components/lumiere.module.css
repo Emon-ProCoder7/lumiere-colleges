@@ -154,34 +154,62 @@
 .modalHeader {
   position: sticky;
   top: 0;
+  z-index: 2;
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: space-between;
   gap: 12px;
+  min-height: 128px;
   padding: 20px 20px 16px;
-  background: var(--bg-panel);
-  border-bottom: 1px solid var(--line);
+  background-color: oklch(16% 0.02 262);
+  background-size: cover;
+  background-position: center;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.modalHeaderOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    180deg,
+    oklch(14% 0.02 262 / 0.25) 0%,
+    oklch(10% 0.02 262 / 0.82) 100%
+  );
+}
+
+.modalHeaderText {
+  position: relative;
 }
 
 .modalTitle {
   font-size: 1.125rem;
   font-weight: 650;
+  color: oklch(97% 0.008 85);
+}
+
+.modalHeaderText .collegeNumbers {
+  color: oklch(78% 0.015 85);
 }
 
 .modalClose {
-  background: var(--bg-raised);
-  border: 1px solid var(--line);
+  position: relative;
+  flex-shrink: 0;
+  background: oklch(10% 0.02 262 / 0.55);
+  border: 1px solid oklch(100% 0 0 / 0.18);
   border-radius: 8px;
   width: 30px;
   height: 30px;
-  color: var(--fg-dim);
+  color: oklch(95% 0.008 85);
   cursor: pointer;
-  transition: border-color 0.16s ease, transform 0.14s cubic-bezier(0.23, 1, 0.32, 1), color 0.16s ease;
+  transition: border-color 0.16s ease, transform 0.14s cubic-bezier(0.23, 1, 0.32, 1), background 0.16s ease;
 }
 
 .modalClose:hover {
   border-color: var(--accent);
-  color: var(--fg);
+  background: oklch(10% 0.02 262 / 0.75);
 }
 
 .modalClose:active {

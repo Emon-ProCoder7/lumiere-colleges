@@ -6,12 +6,44 @@
 }
 
 .header {
+  position: relative;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  padding: 20px 24px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  background-color: var(--bg-raised);
+  background-image: url("/header-banner.png");
+  background-size: cover;
+  background-position: left center;
+  background-repeat: no-repeat;
+  animation: bannerDrift 22s ease-in-out infinite alternate;
+}
+
+@keyframes bannerDrift {
+  from { background-position: left center; }
+  to { background-position: 54% center; }
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px var(--line), 0 4px 18px rgba(232, 185, 74, 0.18);
 }
 
 .title {
@@ -29,9 +61,27 @@
 .refreshRow {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   color: var(--fg-faint);
   font-size: 0.8125rem;
+  position: relative;
+  z-index: 1;
+}
+
+.liveDot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--good);
+  box-shadow: 0 0 0 0 rgba(111, 207, 142, 0.6);
+  animation: livePulse 2s ease-out infinite;
+}
+
+@keyframes livePulse {
+  0% { box-shadow: 0 0 0 0 rgba(111, 207, 142, 0.55); }
+  70% { box-shadow: 0 0 0 8px rgba(111, 207, 142, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(111, 207, 142, 0); }
 }
 
 .refreshButton {
@@ -42,10 +92,93 @@
   cursor: pointer;
   color: var(--fg);
   font-size: 0.8125rem;
+  transition: border-color 0.2s ease, transform 0.15s ease;
 }
 
 .refreshButton:hover {
   border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.refreshButton:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(5, 8, 13, 0.7);
+  backdrop-filter: blur(6px);
+}
+
+.modalPanel {
+  width: 100%;
+  max-width: 640px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  transform-origin: center;
+}
+
+.modalHeader {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 20px 16px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--line);
+}
+
+.modalTitle {
+  font-size: 1.125rem;
+  font-weight: 650;
+}
+
+.modalClose {
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  color: var(--fg-dim);
+  cursor: pointer;
+  transition: border-color 0.16s ease, transform 0.14s cubic-bezier(0.23, 1, 0.32, 1), color 0.16s ease;
+}
+
+.modalClose:hover {
+  border-color: var(--accent);
+  color: var(--fg);
+}
+
+.modalClose:active {
+  transform: scale(0.94);
+}
+
+.modalBody {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modalSectionTitle {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--fg-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 8px;
 }
 
 .statsRow {
@@ -82,6 +215,22 @@
   margin: 28px 0 12px;
 }
 
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 28px;
+}
+
+.sectionHead .sectionTitle {
+  margin: 0 0 12px;
+}
+
+.sectionHint {
+  color: var(--fg-faint);
+  font-size: 0.75rem;
+}
+
 .collegeGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -89,15 +238,37 @@
 }
 
 .collegeCard {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
   background: var(--bg-panel);
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 14px 16px;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.18s ease, transform 0.16s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.18s ease;
+}
+
+.collegeCard:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 8px 24px rgba(232, 185, 74, 0.12);
+}
+
+.collegeCard:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.collegeCard:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .collegeCard[data-active="true"] {
   border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-soft);
 }
 
 .collegeName {
@@ -159,6 +330,12 @@
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 10px 14px;
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+
+.listItem:hover {
+  border-color: var(--line-soft);
+  transform: translateX(2px);
 }
 
 .listItemTop {

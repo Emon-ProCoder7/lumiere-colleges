@@ -65,6 +65,12 @@ type CallAnalyticsRow = {
   duration_seconds: number;
 };
 
+function extractDigits(raw: string | null): string {
+  if (!raw) return "";
+  const sipMatch = raw.match(/sip:\+?(\d+)@/i);
+  return sipMatch ? sipMatch[1] : raw.replace(/\D/g, "");
+}
+
 function melbourneDayKey(iso: string): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: MELBOURNE_TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(
     new Date(iso)
@@ -274,7 +280,7 @@ export async function getLumiereOverview(range: RangeInput = { kind: "preset", p
     recordingUrl: row.recording_url,
   }));
 
-  const recentCalls: LumiereCall[] = ((callsRes.data ?? []) as CallRow[]).map((row) => ({
+  const recentCallsRaw: LumiereCall[] = ((callsRes.data ?? []) as CallRow[]).map((row) => ({
     id: row.id,
     collegeCode: row.college_code,
     collegeName: nameFor(row.college_code),
@@ -285,6 +291,23 @@ export async function getLumiereOverview(range: RangeInput = { kind: "preset", p
     durationSeconds: row.duration_seconds,
     recordingUrl: row.call_recording_url,
   }));
+
+  // A call that rings out to voicemail never gets its own Vodia "call
+  // recording" (that feature only fires for calls answered by a live
+  // extension) — the only audio that exists for it is the voicemail
+  // message itself. Cross-link the two so the call entry is playable too,
+  // instead of leaving it silent when the audio genuinely exists elsewhere.
+  const recentCalls: LumiereCall[] = recentCallsRaw.map((call) => {
+    if (call.recordingUrl || call.status !== "Voicemail" || !call.startedAt) return call;
+    const callDigits = extractDigits(call.fromNumber);
+    const callTime = new Date(call.startedAt).getTime();
+    const match = recentVoicemails.find((vm) => {
+      if (vm.collegeCode !== call.collegeCode) return false;
+      if (extractDigits(vm.fromNumber) !== callDigits) return false;
+      return Math.abs(new Date(vm.receivedAt).getTime() - callTime) < 3 * 60 * 1000;
+    });
+    return match ? { ...call, recordingUrl: match.recordingUrl } : call;
+  });
 
   const answeredCalls = callWindow.filter((r) => r.status === "Answered");
   const answerRatePct = callWindow.length > 0 ? Math.round((answeredCalls.length / callWindow.length) * 100) : 0;

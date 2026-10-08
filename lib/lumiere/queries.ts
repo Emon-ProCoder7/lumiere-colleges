@@ -34,6 +34,7 @@ type CallRow = {
   status: string | null;
   started_at: string | null;
   duration_seconds: number;
+  call_recording_url: string | null;
 };
 
 export async function getLumiereOverview(): Promise<LumiereOverview> {
@@ -52,7 +53,7 @@ export async function getLumiereOverview(): Promise<LumiereOverview> {
       .limit(RECENT_LIMIT),
     supabase
       .from("lumiere_calls")
-      .select("id, college_code, from_number, direction, status, started_at, duration_seconds")
+      .select("id, college_code, from_number, direction, status, started_at, duration_seconds, call_recording_url")
       .order("started_at", { ascending: false })
       .limit(RECENT_LIMIT),
     supabase.from("lumiere_voicemails").select("college_code, received_at").gte("received_at", since),
@@ -129,6 +130,7 @@ export async function getLumiereOverview(): Promise<LumiereOverview> {
     status: row.status,
     startedAt: row.started_at,
     durationSeconds: row.duration_seconds,
+    recordingUrl: row.call_recording_url,
   }));
 
   return {

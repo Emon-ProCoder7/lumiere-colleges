@@ -28,6 +28,7 @@ export type LumiereCall = {
   status: string | null;
   startedAt: string | null;
   durationSeconds: number;
+  recordingUrl: string | null;
 };
 
 export type LumiereOverview = {

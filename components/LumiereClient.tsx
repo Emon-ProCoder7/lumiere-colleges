@@ -229,6 +229,9 @@ export function LumiereClient({ initialData }: { initialData: LumiereOverview })
                       </>
                     ) : null}
                   </div>
+                  {call.recordingUrl ? (
+                    <audio className={styles.audioPlayer} controls preload="none" src={call.recordingUrl} />
+                  ) : null}
                 </motion.div>
               ))}
             </div>
@@ -357,6 +360,9 @@ function CollegeDetailModal({
                         </>
                       ) : null}
                     </div>
+                    {call.recordingUrl ? (
+                      <audio className={styles.audioPlayer} controls preload="none" src={call.recordingUrl} />
+                    ) : null}
                   </div>
                 ))}
               </div>

@@ -16,6 +16,7 @@ export type LumiereVoicemail = {
   receivedAt: string;
   durationSeconds: number;
   transcription: string | null;
+  recordingUrl: string | null;
 };
 
 export type LumiereCall = {

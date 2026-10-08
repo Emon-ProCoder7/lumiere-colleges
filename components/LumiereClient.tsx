@@ -187,6 +187,9 @@ export function LumiereClient({ initialData }: { initialData: LumiereOverview })
                   {vm.transcription ? (
                     <div className={styles.transcription}>&ldquo;{vm.transcription}&rdquo;</div>
                   ) : null}
+                  {vm.recordingUrl ? (
+                    <audio className={styles.audioPlayer} controls preload="none" src={vm.recordingUrl} />
+                  ) : null}
                 </motion.div>
               ))}
             </div>
@@ -314,6 +317,9 @@ function CollegeDetailModal({
                     <div className={styles.listItemFrom}>{formatDuration(vm.durationSeconds)}</div>
                     {vm.transcription ? (
                       <div className={styles.transcription}>&ldquo;{vm.transcription}&rdquo;</div>
+                    ) : null}
+                    {vm.recordingUrl ? (
+                      <audio className={styles.audioPlayer} controls preload="none" src={vm.recordingUrl} />
                     ) : null}
                   </div>
                 ))}

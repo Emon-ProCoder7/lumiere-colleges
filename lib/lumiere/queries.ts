@@ -23,6 +23,7 @@ type VoicemailRow = {
   received_at: string;
   duration_seconds: number;
   transcription: string | null;
+  recording_url: string | null;
 };
 
 type CallRow = {
@@ -46,7 +47,7 @@ export async function getLumiereOverview(): Promise<LumiereOverview> {
       .order("ring_group_account"),
     supabase
       .from("lumiere_voicemails")
-      .select("id, college_code, from_number, received_at, duration_seconds, transcription")
+      .select("id, college_code, from_number, received_at, duration_seconds, transcription, recording_url")
       .order("received_at", { ascending: false })
       .limit(RECENT_LIMIT),
     supabase
@@ -116,6 +117,7 @@ export async function getLumiereOverview(): Promise<LumiereOverview> {
     receivedAt: row.received_at,
     durationSeconds: row.duration_seconds,
     transcription: row.transcription,
+    recordingUrl: row.recording_url,
   }));
 
   const recentCalls: LumiereCall[] = ((callsRes.data ?? []) as CallRow[]).map((row) => ({

@@ -3,6 +3,13 @@ import { NextResponse, type NextRequest } from "next/server";
 
 const PUBLIC_PATHS = ["/login", "/auth"];
 
+function allowedEmails(): string[] {
+  return (process.env.ALLOWED_EMAILS || "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+}
+
 export async function proxy(request: NextRequest) {
   // Vercel's cron invoker is not a browser session and doesn't follow
   // redirects — it authenticates itself via CRON_SECRET inside the route,
@@ -35,14 +42,26 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const isPublicPath = PUBLIC_PATHS.some((path) => request.nextUrl.pathname.startsWith(path));
+  const email = user?.email?.toLowerCase();
+  const isAllowed = !!email && allowedEmails().includes(email);
 
-  if (!user && !isPublicPath) {
+  // A real Google sign-in that isn't on the approved list — kill the
+  // session immediately rather than just blocking the page, so a stray
+  // session cookie can't linger.
+  if (user && !isAllowed) {
+    await supabase.auth.signOut();
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("error", "not_allowed");
+    return NextResponse.redirect(loginUrl);
+  }
+
+  if (!isAllowed && !isPublicPath) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  if (user && request.nextUrl.pathname === "/login") {
+  if (isAllowed && request.nextUrl.pathname === "/login") {
     return NextResponse.redirect(new URL("/", request.url));
   }
 

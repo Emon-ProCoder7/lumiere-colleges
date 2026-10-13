@@ -4,6 +4,13 @@ import { NextResponse, type NextRequest } from "next/server";
 const PUBLIC_PATHS = ["/login", "/auth"];
 
 export async function proxy(request: NextRequest) {
+  // Vercel's cron invoker is not a browser session and doesn't follow
+  // redirects — it authenticates itself via CRON_SECRET inside the route,
+  // so it must never hit the session redirect below.
+  if (request.nextUrl.pathname.startsWith("/api/cron")) {
+    return NextResponse.next();
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(

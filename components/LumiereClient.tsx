@@ -15,7 +15,6 @@ import {
 import type { LumiereOverview, CollegeSummary } from "@/lib/lumiere/types";
 import { RangeSelector, type RangeValue } from "./RangeSelector";
 import { InsightsSection } from "./InsightsSection";
-import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
 const REFRESH_MS = 30_000;
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
@@ -47,8 +46,7 @@ export function LumiereClient({ initialData }: { initialData: LumiereOverview })
   const [range, setRange] = useState<RangeValue>(DEFAULT_RANGE);
 
   const handleSignOut = useCallback(async () => {
-    const supabase = createBrowserSupabaseClient();
-    await supabase.auth.signOut();
+    await fetch("/api/auth/logout", { method: "POST" });
     router.replace("/login");
     router.refresh();
   }, [router]);

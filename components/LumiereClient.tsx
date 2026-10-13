@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import styles from "./lumiere.module.css";
 import {
@@ -14,6 +15,7 @@ import {
 import type { LumiereOverview, CollegeSummary } from "@/lib/lumiere/types";
 import { RangeSelector, type RangeValue } from "./RangeSelector";
 import { InsightsSection } from "./InsightsSection";
+import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
 const REFRESH_MS = 30_000;
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
@@ -37,11 +39,19 @@ function rangeToQuery(range: RangeValue): string {
 }
 
 export function LumiereClient({ initialData }: { initialData: LumiereOverview }) {
+  const router = useRouter();
   const [data, setData] = useState(initialData);
   const [lastFetched, setLastFetched] = useState(Date.now());
   const [loading, setLoading] = useState(false);
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
   const [range, setRange] = useState<RangeValue>(DEFAULT_RANGE);
+
+  const handleSignOut = useCallback(async () => {
+    const supabase = createBrowserSupabaseClient();
+    await supabase.auth.signOut();
+    router.replace("/login");
+    router.refresh();
+  }, [router]);
 
   const refresh = useCallback(async (nextRange: RangeValue) => {
     setLoading(true);
@@ -102,6 +112,9 @@ export function LumiereClient({ initialData }: { initialData: LumiereOverview })
           <span>Updated {formatRelativeTime(new Date(lastFetched).toISOString())}</span>
           <button className={styles.refreshButton} onClick={() => refresh(range)} disabled={loading}>
             {loading ? "Refreshing…" : "Refresh"}
+          </button>
+          <button className={styles.refreshButton} onClick={handleSignOut}>
+            Sign out
           </button>
         </div>
       </div>
